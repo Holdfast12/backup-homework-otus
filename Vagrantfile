@@ -12,7 +12,7 @@ MACHINES = {
         }
      }
   },
-  :backupserver => {
+  :backup => {
         :box_name => "centos/7",
     :disks => {
         :sata1 => {
@@ -46,7 +46,10 @@ MACHINES = {
                       end
              end
        box.vm.provision "shell", inline: <<-SHELL
-            echo 123
+            # Подключаем EPEL репозиторий с дополнительными пакетами
+            sudo yum install -y epel-release
+            # Устанавливаем на client и backup сервере borgbackup
+            sudo yum install -y borgbackup
         SHELL
         end
     end

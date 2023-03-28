@@ -152,4 +152,20 @@ Vagrant.configure("2") do |config|
     server.vm.provision "shell", privileged: true, path: 'backup.sh'
   end
   
+  config.vm.define "newclient" do |server|
+    #config.vm.box = 'centos/8'
+    config.vm.box = 'almalinux/8'
+    #config.vm.box_version = "2011.0"
+    server.vm.host_name = 'newclient'
+    server.vm.network "private_network", ip: '192.168.1.5', netmask: "255.255.255.0", virtualbox__intnet: "otus"
+
+    server.vm.provider "virtualbox" do |vb|
+      vb.memory = "1024"
+      vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+      name = get_vm_name('newclient')
+    end
+    server.vm.provision "shell", privileged: true, path: 'all.sh'
+    server.vm.provision "shell", privileged: true, path: 'newclient.sh'
+  end
+
 end

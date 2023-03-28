@@ -5,13 +5,14 @@ cp /vagrant/id_rsa.pub /home/vagrant/.ssh
 chown vagrant:vagrant /home/vagrant/.ssh/id_rsa.pub /home/vagrant/.ssh/id_rsa
 chmod 700 /home/vagrant/.ssh/id_rsa.pub /home/vagrant/.ssh/id_rsa
 
+mkdir /root/.ssh
 cp /vagrant/id_rsa /root/.ssh
 cp /vagrant/id_rsa.pub /root/.ssh
-chown vagrant:vagrant /root/.ssh/id_rsa.pub /root/.ssh/id_rsa
-chmod 700 /root/.ssh/id_rsa.pub /root/.ssh/id_rsa
+chmod -R 700 /root/.ssh
 
 # 7) Инициализируем репозиторий borg на backup сервере с client сервера
-#sudo -u vagrant borg init --encryption=repokey borg@192.168.1.4:/var/backup/
+# использован пароль Otus1234
+# sudo -u vagrant borg init --encryption=repokey borg@192.168.1.4:/var/backup/
 
 # 8) Запускаем для проверки создания бэкапа
 #borg create --stats --list borg@192.168.1.4:/var/backup/::"etc-{now:%Y-%m-%d_%H:%M:%S}" /etc
@@ -28,8 +29,14 @@ chmod 700 /root/.ssh/id_rsa.pub /root/.ssh/id_rsa
 # 12) Автоматизируем создание бэкапов с помощью systemd
 # Создаем сервис и таймер в каталоге /etc/systemd/system/
 
+# Для запуска таймера+автозапуска:
+# systemctl enable borg-backup.timer --now
+
 # отслеживание таймеров
 # systemctl list-timers --all
+
+
+
 cat <<'EOT' > /etc/systemd/system/borg-backup.service
 # /etc/systemd/system/borg-backup.service
 [Unit]
@@ -77,6 +84,3 @@ WantedBy=timers.target
 
 EOT
 
-
-systemctl enable borg-backup.timer
-systemctl start borg-backup.timer
